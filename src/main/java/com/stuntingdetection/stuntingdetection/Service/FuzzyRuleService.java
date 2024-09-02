@@ -45,4 +45,9 @@ public class FuzzyRuleService {
         }
         return null;
     }
+
+    // Metode baru untuk mencari rule berdasarkan kondisi berat badan dan tinggi badan
+    public List<FuzzyRule> findByUsiaAndBeratBadanConditionAndTinggiBadanCondition(String usia, String beratBadanCondition, String tinggiBadanCondition) {
+        return fuzzyRuleRepository.findByUsiaAndBeratBadanConditionAndTinggiBadanCondition(usia, beratBadanCondition, tinggiBadanCondition);
+    }
 }

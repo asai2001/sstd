@@ -26,9 +26,12 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 public class CustomizeAuthorFilterConfig extends OncePerRequestFilter {
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String servletPath = request.getServletPath();
+
 
         // Pengecualian untuk endpoint publik dan Swagger
         if (servletPath.equalsIgnoreCase("/login") ||

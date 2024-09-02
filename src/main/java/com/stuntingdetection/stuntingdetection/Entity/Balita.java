@@ -2,6 +2,8 @@ package com.stuntingdetection.stuntingdetection.Entity;
 
 
 import javax.persistence.*;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Entity
@@ -11,9 +13,22 @@ public class Balita {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String usia;  // Misalnya "Muda" atau "Tua"
-    private double beratBadan;  // dalam kg
-    private double tinggiBadan;  // dalam cm
+    private String nama;
+    private String usia;
+    private String jenisKelamin;
+    private String keterangan;
+    private String skorStunting;
+    private double beratBadan;
+    private double tinggiBadan;
+//
+//    private String beratBadanCondition; // Menggunakan string, misalnya "kurang", "normal"
+//    private String tinggiBadanCondition; // Menggunakan string, misalnya "pendek", "normal"
+//
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 
 }
 

@@ -10,7 +10,8 @@ import lombok.Setter;
 @Getter
 public class UserDto {
     private int userId;
-    private String nama;
+    private String fullname;
+    private String username;
     private String email;
     private String password;
     private String alamat;

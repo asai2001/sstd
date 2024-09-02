@@ -6,6 +6,7 @@ import com.stuntingdetection.stuntingdetection.Entity.Role;
 import com.stuntingdetection.stuntingdetection.Entity.User;
 import com.stuntingdetection.stuntingdetection.Repository.RoleRepo;
 import com.stuntingdetection.stuntingdetection.Repository.UserRepo;
+import com.stuntingdetection.stuntingdetection.Security.CustomUser;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +35,10 @@ public class UserLoginServiceImpl implements UserLoginServices, UserDetailsServi
     public final PasswordEncoder passwordEncoder;
     private final Logger logger = LogManager.getLogger(UserLoginServiceImpl.class);
 
+
+
     @Override
-    public User findByNama(String nama) {
+    public User findByUsername(String username) {
         return null;
     }
 
@@ -45,39 +48,25 @@ public class UserLoginServiceImpl implements UserLoginServices, UserDetailsServi
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
-        if (user == null){
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
             logger.error("user not found");
+            throw new UsernameNotFoundException("User not found");
         } else {
-            logger.info(email + "user found ");
+            logger.info(username + " user found ");
         }
-        Collection <SimpleGrantedAuthority > simpleGrantedAuthorities = new ArrayList<>();
+        Collection<SimpleGrantedAuthority> simpleGrantedAuthorities = new ArrayList<>();
         user.getRoles().forEach(roles -> simpleGrantedAuthorities.add(new SimpleGrantedAuthority(roles.getRole())));
-        return new org.springframework.security.core.userdetails.
-                User(user.getEmail(), user.getPassword(), simpleGrantedAuthorities);
-    }
 
-    @Override
-    public User saveUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
-
-    @Override
-    public User saveUserDefault(UserDto user) {
-        User saveUser = new User();
-        saveUser.setEmail(user.getEmail());
-        List<Role> getRoleById = roleRepo.findByRoleId(2);
-        saveUser.setRoles(getRoleById);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(saveUser);
+        // Kembalikan CustomUser dengan userId dan fullname
+        return new CustomUser(user.getUserId().toString(), user.getEmail(), user.getPassword(), user.getFullname(), simpleGrantedAuthorities);
     }
 
     @Override
     public User registerSelectRole(UserDto userLogin, int roleId) {
         User saveUser = new User();
-        saveUser.setNama(userLogin.getNama());
+        saveUser.setFullname(userLogin.getFullname());
         saveUser.setEmail(userLogin.getEmail());
         List<Role> getRoleById = roleRepo.findByRoleId(roleId);
         saveUser.setRoles(getRoleById);
@@ -88,7 +77,8 @@ public class UserLoginServiceImpl implements UserLoginServices, UserDetailsServi
     @Override
     public User registerSelectRole2(UserDto userLogin) {
         User saveUser = new User();
-        saveUser.setNama(userLogin.getNama());
+        saveUser.setUsername(userLogin.getUsername());
+        saveUser.setFullname(userLogin.getFullname());
         saveUser.setEmail(userLogin.getEmail());
         saveUser.setNoHandphone(userLogin.getNoHandphone());
         saveUser.setAlamat(userLogin.getAlamat());
@@ -97,7 +87,6 @@ public class UserLoginServiceImpl implements UserLoginServices, UserDetailsServi
         saveUser.setPassword(passwordEncoder.encode(userLogin.getPassword()));
         return userRepository.save(saveUser);
     }
-
 
 
 }

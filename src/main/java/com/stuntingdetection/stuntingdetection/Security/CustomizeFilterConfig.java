@@ -40,7 +40,7 @@ CustomizeFilterConfig extends UsernamePasswordAuthenticationFilter {
 
         try {
             Map<String, String> mapRequest = new ObjectMapper().readValue(request.getInputStream(), Map.class);
-            username = mapRequest.get("email");// change to email
+            username = mapRequest.get("username");// change to email
             password = mapRequest.get("password");
 
         } catch (IOException io) {
@@ -53,25 +53,40 @@ CustomizeFilterConfig extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        User user = (User) authResult.getPrincipal();
+        CustomUser user = (CustomUser) authResult.getPrincipal();
         Algorithm algorithm = Algorithm.HMAC512("Binar".getBytes());
-        String accessToken = JWT.create().withSubject(user.getUsername()).
-                withExpiresAt(new Date(System.currentTimeMillis()+10*60*1000)).
-                withIssuer(request.getRequestURL().toString()).
-                withClaim("roles",user.getAuthorities().stream().
-                        map(GrantedAuthority :: getAuthority).collect(Collectors.toList()))
+
+        // Set 2 hari (2 * 24 * 60 * 60 * 1000 milidetik)
+        long twoDaysInMillis = 2 * 24 * 60 * 60 * 1000;
+
+        String accessToken = JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + twoDaysInMillis))
+                .withIssuer(request.getRequestURL().toString())
+                .withClaim("roles", user.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
+                .withClaim("userId", user.getUserId())
+                .withClaim("email", user.getUsername())
+                .withClaim("nama", user.getFullname())
                 .sign(algorithm);
-        String resreshToken = JWT.create().withSubject(user.getUsername()).
-                withExpiresAt(new Date(System.currentTimeMillis()+10*60*1000)).
-                withIssuer(request.getRequestURL().toString()).sign(algorithm);
+
+        String refreshToken = JWT.create()
+                .withSubject(user.getUsername())
+                .withExpiresAt(new Date(System.currentTimeMillis() + twoDaysInMillis))
+                .withIssuer(request.getRequestURL().toString())
+                .sign(algorithm);
+
         response.setHeader("access_token", accessToken);
-        response.setHeader("refresh_token", resreshToken);
-        Map <String, String> map = new HashMap<>();
+        response.setHeader("refresh_token", refreshToken);
+
+        Map<String, String> map = new HashMap<>();
         map.put("access_token", accessToken);
-        map.put("refresh_token", resreshToken);
+        map.put("refresh_token", refreshToken);
         response.setContentType(APPLICATION_JSON_VALUE);
         new ObjectMapper().writeValue(response.getOutputStream(), map);
     }
+
+
 
 }
 

@@ -1,5 +1,6 @@
 package com.stuntingdetection.stuntingdetection.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,8 +15,10 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
-    @Column (name = "nama")
-    private String nama;
+    @Column (name = "username")
+    private String username;
+    @Column (name = "fullname")
+    private String fullname;
     @Column(name = "email")
     private String email;
     @Column(name = "password")
@@ -29,4 +32,8 @@ public class User {
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 
     private List<Role> roles;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Balita> balitaList;
 }

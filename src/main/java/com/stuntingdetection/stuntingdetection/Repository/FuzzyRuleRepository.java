@@ -12,4 +12,7 @@ import java.util.List;
 public interface FuzzyRuleRepository extends JpaRepository<FuzzyRule, Long> {
     List<FuzzyRule> findByUsiaAndBeratBadanMinLessThanEqualAndBeratBadanMaxGreaterThanEqualAndTinggiBadanMinLessThanEqualAndTinggiBadanMaxGreaterThanEqual(
             String usia, double beratBadanMin, double beratBadanMax, double tinggiBadanMin, double tinggiBadanMax);
+
+    List<FuzzyRule> findByUsiaAndBeratBadanConditionAndTinggiBadanCondition(
+            String usia, String beratBadanCondition, String tinggiBadanCondition);
 }

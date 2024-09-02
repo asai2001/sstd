@@ -15,18 +15,18 @@ public class FuzzyRuleController {
     @Autowired
     private FuzzyRuleService fuzzyRuleService;
 
-    @GetMapping("/get-all-rule")
+    @GetMapping("/api/fuzzy-rule/get-all-rule")
     public List<FuzzyRule> getAllRules() {
         return fuzzyRuleService.getAllRules();
     }
 
-    @PostMapping("/add-rule")
+    @PostMapping("/api/fuzzy-rule/add-rule")
     public ResponseEntity<FuzzyRule> addRule(@RequestBody FuzzyRule rule) {
         FuzzyRule newRule = fuzzyRuleService.addRule(rule);
         return ResponseEntity.status(HttpStatus.CREATED).body(newRule);
     }
 
-    @PutMapping("update-rule/{id}")
+    @PutMapping("/api/fuzzy/update-rule/{id}")
     public ResponseEntity<FuzzyRule> updateRule(@PathVariable Long id, @RequestBody FuzzyRule ruleDetails) {
         FuzzyRule updatedRule = fuzzyRuleService.updateRule(id, ruleDetails);
         if (updatedRule != null) {
@@ -36,7 +36,7 @@ public class FuzzyRuleController {
         }
     }
 
-    @DeleteMapping("delete-rule/{id}")
+    @DeleteMapping("/api/fuzzy-rule/delete-rule/{id}")
     public ResponseEntity<Void> deleteRule(@PathVariable Long id) {
         fuzzyRuleService.deleteRule(id);
         return ResponseEntity.noContent().build();
